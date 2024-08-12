@@ -3,10 +3,11 @@
     "target": "ES6",
     "module": "commonjs",
     "declaration": true,
-    "declarationMap": true,
-    "outDir": "./dist",
-    "strict": true,
-    "rootDir": "./src"
+    "sourceMap": true,
+    "outDir": "lib",
+    "rootDir": "src",
+    "moduleResolution": "node",
+    "lib": ["esnext", "dom"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/__tests__/*"]

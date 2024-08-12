@@ -7,10 +7,7 @@
 node_modules/
 dist/
 src/
-script/
-*.ts
-*.map
-tsconfig.json
+examples/
 
 # Compiled Java class files
 *.class
