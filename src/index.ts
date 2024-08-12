@@ -2,14 +2,10 @@ import * as readline from "readline";
 
 import { IList, SelectOption } from "./types";
 import { changeTextColor } from "./helpers";
+import { SELECT_OPTIONS_DEFAULT_VALUES } from "./constants";
 
-const selectOption: SelectOption = {
-  selectIndex: 0,
-  options: [],
-  selector: "*",
-  selectionColor: "green",
-  isFirstTimeShown: true,
-  terminateProcess: false,
+let selectOption: SelectOption = {
+  ...SELECT_OPTIONS_DEFAULT_VALUES,
   createOptionMenu: () => {
     const optionLength = selectOption.options.length;
     const cursorPointer = changeTextColor(
@@ -38,38 +34,39 @@ const selectOption: SelectOption = {
     }
   },
   resolveSelectOption: () => undefined,
-  close: () => {
+  close: (resolveSelectOption: boolean) => {
     process.stdin.setRawMode(false);
     selectOption.selectedOption =
       selectOption.options[selectOption.selectIndex];
     selectOption.resolveSelectOption();
-    if (selectOption.terminateProcess) process.stdin.pause();
+    process.stdin.removeListener("keypress", keyPressedHandler);
+    if (selectOption.terminateProcess) process.exit(0);
+    selectOption = { ...selectOption, ...SELECT_OPTIONS_DEFAULT_VALUES };
   },
 };
 
-const keyPressedHandler = (_: any, key: any) => {
+function keyPressedHandler(_: any, key: any) {
   if (key) {
-    const optionLength = selectOption.options.length - 1;
-    if (key.name === "down" && selectOption.selectIndex < optionLength) {
-      selectOption.selectIndex += 1;
+    if (
+      key.name === "down" &&
+      selectOption.selectIndex < selectOption.options.length - 1
+    ) {
+      selectOption.selectIndex = selectOption.selectIndex + 1;
       selectOption.createOptionMenu();
     } else if (key.name === "up" && selectOption.selectIndex > 0) {
       selectOption.selectIndex -= 1;
       selectOption.createOptionMenu();
     } else if (key.name === "return") {
-      process.stdout.write(`\x1B[${optionLength + 1}E`);
-      process.stdout.write(
-        `Selected: ${selectOption.options[selectOption.selectIndex]}\n`
-      );
-      selectOption.close();
+      process.stdout.write(`\x1B[${selectOption.options.length}E`);
+      selectOption.close(true);
     } else if (key.name === "escape" || (key.name === "c" && key.ctrl)) {
-      process.stdout.write(`\x1B[${optionLength + 1}E`);
-      selectOption.close();
+      process.stdout.write(`\x1B[${selectOption.options.length - 1}E`);
+      selectOption.close(false);
     }
   }
-};
+}
 
-const setSelectionSettings = (settingList: IList["settings"] | undefined) => {
+function setSelectionSettings(settingList: IList["settings"] | undefined) {
   if (!settingList) return;
 
   const { selectionColor, selector, terminateProcess } = settingList;
@@ -85,7 +82,7 @@ const setSelectionSettings = (settingList: IList["settings"] | undefined) => {
   if (terminateProcess) {
     selectOption.terminateProcess = terminateProcess;
   }
-};
+}
 
 export async function list({
   options,

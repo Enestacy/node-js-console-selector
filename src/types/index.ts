@@ -12,7 +12,7 @@ export interface SelectOption {
   selectionColor: SelectionColor;
   terminateProcess: boolean;
   createOptionMenu: () => void;
-  close: () => void;
+  close: (resolveSelectOption: boolean) => void;
   resolveSelectOption: () => void | string;
 }
 
