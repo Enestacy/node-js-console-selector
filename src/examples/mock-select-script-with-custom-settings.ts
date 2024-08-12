@@ -1,4 +1,4 @@
-import { list } from "../index";
+import { list } from "../list";
 
 async function bootstrap() {
   await list({
