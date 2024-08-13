@@ -1,6 +1,6 @@
 {
   "name": "nodejs-console-selector",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Interactive selector for nodejs",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
